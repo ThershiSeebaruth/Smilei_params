@@ -71,12 +71,12 @@ num_patches = 2**10 #power of 2 (prioritize large number of patches?)
 
 Nx= num_patches*cell_per_patch 
 Lx = dx*Nx 
-Nppc = 500 #int(k/2*250) #350 #?
+Nppc = 1500 #int(k/2*250) #350 #?
 #---------------------------------------------------------------------------------------------------------
 
 # Normalization time in ns
-dt = 0.9*dx  
-Tsim_ns = 4 #Simulation time in ns
+dt = 0.95*dx  
+Tsim_ns = 1.5 #Simulation time in ns
 t_sim = int(Tsim_ns*wpe/1e9) #nondimensionalization 
 Nt = t_sim/dt
 debug_time = Nt/100
@@ -164,7 +164,7 @@ Collisions( #this corresponds to collisions between electrons and electrons
 
 Checkpoints(
     # restart_dir = "dump1",
-    dump_step = 3000000,
+    dump_step = int(Nt/8),
     exit_after_dump = False,
     keep_n_dumps = 1,
 )
