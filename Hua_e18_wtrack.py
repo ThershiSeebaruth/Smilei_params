@@ -79,10 +79,10 @@ dt = 0.95*dx
 Tsim_ns = 4 #Simulation time in ns
 t_sim = int(Tsim_ns*wpe/1e9) #nondimensionalization 
 Nt = t_sim/dt
-debug_time =int( Nt/100/Tsim_ns*2)
+debug_time = int( Nt/100/Tsim_ns*2)
 
-#t_sim = 50*dt #Testing parameter	
-#debug_time = 1
+t_sim = 50*dt #Testing parameter	
+debug_time = 1
 
 
 Main(
@@ -131,7 +131,7 @@ Species(
     particles_per_cell= Nppc,
     mass = miP,
     charge = ZP,
-    number_density = trapezoidal(niP_n0, xvacuum=2*dx, xplateau=3038*dx, xslope1=30*dx, xslope2=2*dx  ),
+    number_density = trapezoidal(0.9*niP_n0, xvacuum=2*dx, xplateau=3038*dx, xslope1=30*dx, xslope2=2*dx  ),
     mean_velocity = [-v0_c, 0., 0.], #need to change the values of the velocity 1
     temperature = [TeP_mec2],
     boundary_conditions = [[ "reflective", "remove"],
@@ -139,13 +139,13 @@ Species(
 )
 
 Species(
-    name = "ion_track",
+    name = "ionT",
     position_initialization = "random",
     momentum_initialization = "mj",
     particles_per_cell= int(Nppc/100),
     mass = miP,
     charge = ZP,
-    number_density = trapezoidal(niP_n0, xvacuum=2*dx, xplateau=3038*dx, xslope1=30*dx, xslope2=2*dx  ),
+    number_density = trapezoidal(0.1*niP_n0, xvacuum=2*dx, xplateau=3038*dx, xslope1=30*dx, xslope2=2*dx  ),
     mean_velocity = [-v0_c, 0., 0.], #need to change the values of the velocity 1
     temperature = [TeP_mec2],
     boundary_conditions = [[ "reflective", "remove"],
@@ -176,22 +176,23 @@ Collisions( #this corresponds to collisions between electrons and electrons
 
 Collisions( #this corresponds to collisions between electrons and electrons 
     species1 = ["eonP"],
-    species2 = ["ion_track"],
+    species2 = ["ionT"],
     coulomb_log = 0,
     debug_every = debug_time*1,
 )
 Collisions( #this corresponds to collisions between electrons and electrons 
     species1 = ["ionP"],
-    species2 = ["ion_track"],
+    species2 = ["ionT"],
     coulomb_log = 0,
     debug_every = debug_time*1,
 )
 Collisions( #this corresponds to collisions between electrons and electrons 
-    species1 = ["ion_track"],
-    species2 = ["ion_track"],
+    species1 = ["ionT"],
+    species2 = ["ionT"],
     coulomb_log = 0,
     debug_every = debug_time*1,
 )
+
 
 Checkpoints(
     #restart_dir ="/ccc/scratch/cont003/gen7678/seebarut/Hua_e18",
@@ -200,7 +201,13 @@ Checkpoints(
     keep_n_dumps = 1,
 )
 
-
+DiagTrackParticles(
+    species = "ionT",
+    every = debug_time*1,
+#    flush_every = 100,
+#    filter = my_filter,
+    attributes = ["x", "px", "py", "pz", "Ex", "Bx"]
+)
 
 DiagScalar(
 	every=debug_time,
@@ -225,7 +232,6 @@ DiagParticleBinning( #(1)
         axes = [ ["x",    0,    Lx, debug_x],
         ]
 )
-
 
 
 # ------------- Ion and Electron phase spaces -------------------
@@ -293,6 +299,7 @@ DiagParticleBinning( #(7)
         axes = [ ["x",    0,    Lx, debug_x],
         ]
 )
+
 
 DiagParticleBinning( #(8)
         deposited_quantity = "weight_vx_pz",
@@ -371,3 +378,44 @@ DiagParticleBinning( #(16)
         ]
 )
 
+DiagParticleBinning( #(17)
+        deposited_quantity = "weight",
+        every =debug_time, 
+        species = ["ionT"],
+        axes = [ ["x",    0,    Lx, debug_x],
+        ]
+)
+
+
+DiagParticleBinning( #(18)
+        deposited_quantity = "weight",
+        every =debug_time, 
+        species = ["ionT"],
+        axes = [ ["x",    0,    Lx, debug_x],
+                 ["vx",   -3*v0_c,    3*v0_c, 400] #1024 is just a ssufficiently large number? 
+        ]
+)
+
+DiagParticleBinning( #(19)
+        deposited_quantity = "weight_vx_px",
+        every =debug_time,
+        species = ["ionP"],
+        axes = [ ["x",    0,    Lx, debug_x ],
+        ]
+)
+
+DiagParticleBinning( #(20)
+        deposited_quantity = "weight_vy_py",
+        every =debug_time,
+        species = ["ionP"],
+        axes = [ ["x",    0,    Lx, debug_x ],
+        ]
+)
+
+DiagParticleBinning( #(21)
+        deposited_quantity = "weight_vz_pz",
+        every =debug_time,
+        species = ["ionP"],
+        axes = [ ["x",    0,    Lx, debug_x ],
+        ]
+)
