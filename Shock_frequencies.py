@@ -96,6 +96,16 @@ print('units.length = ' f'{unit_length:1.3E}')
 print('units.time = ' f'{unit_time:1.3E}')
 print('units.number_density = '  f'{ne:1.3E}') # num/m^3
 print('units.temperature    = ' f'{Te:1.3E}')
-
-
+##### Check this as well for maxwellian dist - background collisions
+"""
+import astropy.units as u
+n_e = ne_us *  u.m**-3
+n_i = ni_us *u.cm**-3
+T = Te_us * u.eV
+clogpy = plasmapy.formulary.Coulomb_logarithm(T, n_e, species = (n2ion, n2ion),z_mean=7, method="hls_min_interp")
+print(clogpy)
+nu_py = plasmapy.formulary.MaxwellianCollisionFrequencies(n2ion, n2ion, v_drift=0, n_a = n_i, T_a =T, T_b =T, n_b = n_i, Coulomb_log=clogpy)
+print(1/nu_py.Lorentz_collision_frequency)
+print(nu_py.v_T_a/nu_py.Lorentz_collision_frequency)
+"""
 
