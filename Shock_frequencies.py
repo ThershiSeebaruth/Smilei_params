@@ -54,7 +54,8 @@ v1_solution = fsolve(equation, (v.to(u.m/u.s)).value)
 
 
 v1 =  v1_solution[0] * u.m/u.s
-#Calculating jump conditions
+#Calculating jump conditions, 2 refers to downstream in shock frame ref.
+
 Mach_q = ((v1**2 * mi ).to(u.J) / ( gamma * (Z+1) * Ti.to(u.J) ))
 print(Mach_q**0.5)
 Mach_q = ((v**2 * mi ).to(u.J) / ( gamma * (Z+1) * Ti.to(u.J) ))
